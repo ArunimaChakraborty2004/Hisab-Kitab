@@ -1,4 +1,4 @@
-Finsakhi React Prototype - v2
+Hisab-Kitab React Prototype - v2
 ============================
 
 This updated prototype includes:
@@ -8,11 +8,7 @@ This updated prototype includes:
 - Quick action buttons for Balance, Schemes, and ID Verification (mocked)
 - Mock integration functions for Bank, Schemes, and KYC inside App.jsx
 
-How to run locally:
-1. cd finsakhi_react_prototype
-2. npm install
-3. npm run dev
-4. Open the Vite URL in Chrome/Edge (for mic + TTS)
+
 
 To connect to a real backend/Dialogflow:
 - Replace mockBankBalance/mockSendMoney/mockSchemes/mockKYC functions with real API calls.
