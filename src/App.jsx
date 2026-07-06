@@ -11,7 +11,7 @@ import HelpSupport from './HelpSupport'
 import ProfilePage from './ProfilePage'
 import AppShell from './AppShell'
 import Chatbot from './Chatbot' // Chatbot (mock/demo) imported
-import { UserCircle, Mic } from 'lucide-react'
+import { ArrowUpRight, BadgeCheck, Landmark, Mic, ShieldCheck, TrendingUp, UserCircle, WalletCards } from 'lucide-react'
 import { t } from './translations'
 
 function AppLoader() {
@@ -21,9 +21,9 @@ function AppLoader() {
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       animation: 'fadeOut 0.5s ease 1.5s forwards'
     }}>
-      <img src="/assets/logo.png" alt="Logo" style={{ width: 80, height: 80, borderRadius: 20, animation: 'pulseLogo 1.5s ease-in-out', border: '1px solid var(--glass-border)' }} />
+      <img src="/assets/logo.png?v=2" alt="Hisab-Kitab logo" onError={(e) => { e.currentTarget.style.display = 'none' }} style={{ width: 80, height: 80, borderRadius: 20, animation: 'pulseLogo 1.5s ease-in-out', border: '1px solid var(--glass-border)', objectFit: 'cover', background: '#fff' }} />
       <div style={{ marginTop: 24, fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Hisab-Kitab</div>
-      <div style={{ marginTop: 8, fontSize: 13, color: 'var(--text-secondary)' }}>Finance in Her Voice</div>
+      <div style={{ marginTop: 8, fontSize: 13, color: 'var(--text-secondary)' }}>{t('Tagline1', 'en-IN')}</div>
     </div>
   )
 }
@@ -118,8 +118,8 @@ function MiniChat({ lang = 'en-IN', speak = false }) {
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={title}>Mini Assistant</div>
-            <div style={subtitle}>Chatbot Demo • {lang}</div>
+            <div style={title}>{t('AskMe', lang)}</div>
+            <div style={subtitle}>{t('Conversation', lang)} • {lang}</div>
           </div>
 
           <div>
@@ -140,9 +140,9 @@ function MiniChat({ lang = 'en-IN', speak = false }) {
                 cursor: 'pointer',
                 fontSize: 12
               }}
-              title="Reset demo"
+              title={t('Reset', lang)}
             >
-              Reset
+              {t('Reset', lang)}
             </button>
           </div>
         </div>
@@ -160,11 +160,11 @@ function MiniChat({ lang = 'en-IN', speak = false }) {
         </div>
 
         <div style={footer}>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Offline demo • safe for showcase</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{t('OfflineDemo', lang)}</div>
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button
-              onClick={() => navigator.clipboard?.writeText("Try: 'balance' or 'send 200 to Sita'")}
+              onClick={() => navigator.clipboard?.writeText(t('SampleCommandText', lang))}
               style={{
                 background: 'transparent',
                 border: '1px solid var(--glass-border)',
@@ -176,7 +176,7 @@ function MiniChat({ lang = 'en-IN', speak = false }) {
                 fontSize: 12
               }}
             >
-              Copy sample
+              {t('CopySample', lang)}
             </button>
           </div>
         </div>
@@ -324,21 +324,21 @@ export default function App(){
     const kycKeywords = ['kyc','aadhar','id','verify','सत्यापित','ನವೀಕರಣ','உறுতিசெய்']
 
     if(balanceKeywords.some(k=>t.includes(k))){
-      const rep = "Your balance is ₹5000"
+      const rep = `${t('YourBalanceIs', lang)} ${new Intl.NumberFormat(lang, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(5000)}`
       addMessage(rep,'bot'); speakText(rep); return
     }
     if(sendKeywords.some(k=>t.includes(k)) && /\d+/.test(t)){
       const amount = t.match(/(\d+)/)[1]
       const beneficiary = 'saved contact'
-      const confirm = `Confirm: send ₹${amount} to ${beneficiary}?`
+      const confirm = `${t('ConfirmSend', lang)} ${new Intl.NumberFormat(lang, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(amount))} ${t('To', lang)} ${beneficiary}?`
       addMessage(confirm,'bot'); speakText(confirm); return
     }
     if(schemeKeywords.some(k=>t.includes(k))){
-      const rep = "You are eligible for 2 schemes: PMJDY and Sukanya Samriddhi"
+      const rep = `${t('EligibleForSchemes', lang)} ${new Intl.NumberFormat(lang).format(2)}: PMJDY and Sukanya Samriddhi`
       addMessage(rep,'bot'); speakText(rep); return
     }
     if(kycKeywords.some(k=>t.includes(k))){
-      const rep = "KYC verification required. Please upload Aadhaar."
+      const rep = t('KycUploadAadhaar', lang)
       addMessage(rep,'bot'); speakText(rep); return
     }
 
@@ -358,6 +358,17 @@ export default function App(){
     const list = SAMPLE_COMMANDS[lang] || SAMPLE_COMMANDS['en-IN']
     return list.map((s,i)=> <div key={i} className='sample-pill' onClick={() => { addMessage(s, 'user'); processText(s); }}>{s}</div>)
   }
+
+  const dashboardStats = [
+    { labelKey: 'AvailableBalance', valueType: 'currency', value: 5000, metaKey: 'MonthlyUp12', icon: <WalletCards size={20} /> },
+    { labelKey: 'SavingsGoal', valueType: 'percent', value: 68, metaKey: 'SavingsLeft', metaValue: 1600, icon: <TrendingUp size={20} /> },
+    { labelKey: 'SchemeMatches', valueType: 'count', value: 2, metaKey: 'ReadyToApply', icon: <Landmark size={20} /> },
+    { labelKey: 'KYCStatus', valueType: 'text', valueKey: 'Secure', metaKey: 'VerifiedProfile', icon: <BadgeCheck size={20} /> }
+  ]
+
+  const formatMoney = (value) => new Intl.NumberFormat(lang, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value)
+  const formatPercent = (value) => new Intl.NumberFormat(lang, { style: 'percent', maximumFractionDigits: 0 }).format(value / 100)
+  const formatCount = (value) => new Intl.NumberFormat(lang).format(value)
 
   function DiagnosticsPanel({ onTestTranscript, lang }) {
     const [txt, setTxt] = useState('')
@@ -391,14 +402,61 @@ export default function App(){
         
         {/* Render selected page */}
         {route === 'home' ? (
+          <>
+          <section className="dashboard-hero">
+            <div className="hero-copy">
+              <div className="hero-kicker"><ShieldCheck size={16} /> {t('VoiceFirstMoneySupport', lang)}</div>
+              <h2>{t('DailyMoneyView', lang)}</h2>
+              <p>{t('AskBalanceTransfer', lang)}</p>
+            </div>
+            <div className="hero-balance">
+              <span>{t('Today', lang)}</span>
+              <strong>{formatMoney(5000)}</strong>
+              <small>{t('HealthySpendingPace', lang)}</small>
+            </div>
+          </section>
+
+          <section className="stat-grid" aria-label="Dashboard summary">
+            {dashboardStats.map((stat) => (
+              <div className="stat-card" key={stat.labelKey}>
+                <div className="stat-icon">{stat.icon}</div>
+                <div>
+                  <div className="stat-label">{t(stat.labelKey, lang)}</div>
+                  <div className="stat-value">
+                    {stat.valueType === 'currency' ? formatMoney(stat.value) : stat.valueType === 'percent' ? formatPercent(stat.value) : stat.valueType === 'count' ? formatCount(stat.value) : t(stat.valueKey, lang)}
+                  </div>
+                  <div className="stat-meta">
+                    <ArrowUpRight size={13} />
+                    {stat.metaKey === 'SavingsLeft'
+                      ? `${formatMoney(stat.metaValue)} ${t('SavingsLeft', lang)}`
+                      : t(stat.metaKey, lang)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </section>
+
           <div className="dashboard-grid">
             
             {/* LEFT COLUMN: Main Interactions */}
             <div className="dashboard-column">
-              <section className="card" style={{ display: 'flex', flexDirection: 'column', minHeight: 480 }}>
-                <h2 className="card-title" style={{ marginBottom: 16 }}>{t('Conversation', lang)}</h2>
+              <section className="card conversation-card" style={{ display: 'flex', flexDirection: 'column', minHeight: 480 }}>
+                <div className="section-heading">
+                  <div>
+                    <p>{t('Assistant', lang)}</p>
+                    <h2>{t('Conversation', lang)}</h2>
+                  </div>
+                  <span className="live-badge">{t('Live', lang)}</span>
+                </div>
                 <div className="conversation" aria-live="polite" style={{ flex: 1, marginBottom: 16 }}>
                   <div className="messages">
+                    {messages.length === 0 && (
+                      <div className="empty-chat">
+                        <Mic size={24} />
+                        <strong>{t('StartWithVoice', lang)}</strong>
+                        <span>{t('TrySample', lang)}</span>
+                      </div>
+                    )}
                     {messages.map((m, i)=>(<div key={i} className={`msg ${m.who==='user'?'user':'bot'}`}>{m.text}</div>))}
                   </div>
                 </div>
@@ -412,7 +470,7 @@ export default function App(){
 
             {/* RIGHT COLUMN: Controls & Setup */}
             <div className="dashboard-column">
-              <section className="card">
+              <section className="card action-card">
                 <div className="actions-header" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div className="avatar" style={{ background: "var(--glass-hover)", border: "1px solid var(--glass-border)", boxShadow: "none" }}><UserCircle size={32} color="var(--text-primary)" /></div>
@@ -450,6 +508,7 @@ export default function App(){
             </div>
 
           </div>
+          </>
         ) : route === 'transactions' ? (
           <TransactionsPage lang={lang} /> // ✅ lang prop added
         ) : route === 'schemes' ? (

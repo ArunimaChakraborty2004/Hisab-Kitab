@@ -362,6 +362,118 @@ export const translations = {
   English: {
     "en-IN": "English",
     "hi-IN": "अंग्रेज़ी"
+  },
+  HisabKitabWorkspace: {
+    "en-IN": "Hisab-Kitab workspace",
+    "hi-IN": "हिसाब-किताब कार्यस्थल"
+  },
+  Today: {
+    "en-IN": "Today",
+    "hi-IN": "आज"
+  },
+  HealthySpendingPace: {
+    "en-IN": "Healthy spending pace",
+    "hi-IN": "सुनियोजित खर्च गति"
+  },
+  VoiceFirstMoneySupport: {
+    "en-IN": "Voice-first money support",
+    "hi-IN": "कथन प्रधान पैसे सहायता"
+  },
+  DailyMoneyView: {
+    "en-IN": "Your daily money view, ready when you are.",
+    "hi-IN": "आप तैयार हों तो आपकी दैनिक पैसे झलक."
+  },
+  AskBalanceTransfer: {
+    "en-IN": "Ask about balance, transfers, government schemes, KYC, or savings in your preferred language.",
+    "hi-IN": "बैलेंस, ट्रांसफर, सरकारी योजना, KYC, या बचत के बारे में अपनी भाषा में पूछें."
+  },
+  ProtectedMode: {
+    "en-IN": "Protected mode",
+    "hi-IN": "सुरक्षित मोड"
+  },
+  AvailableBalance: {
+    "en-IN": "Available balance",
+    "hi-IN": "उपलब्ध शेष"
+  },
+  SavingsGoal: {
+    "en-IN": "Savings goal",
+    "hi-IN": "बचत लक्ष्य"
+  },
+  SchemeMatches: {
+    "en-IN": "Scheme matches",
+    "hi-IN": "योजना मिलान"
+  },
+  KYCStatus: {
+    "en-IN": "KYC status",
+    "hi-IN": "KYC स्थिति"
+  },
+  MonthlyUp12: {
+    "en-IN": "+12% this month",
+    "hi-IN": "इस महीने +12%"
+  },
+  SavingsLeft: {
+    "en-IN": "left",
+    "hi-IN": "शेष"
+  },
+  ReadyToApply: {
+    "en-IN": "Ready to apply",
+    "hi-IN": "आवेदन के लिए तैयार"
+  },
+  VerifiedProfile: {
+    "en-IN": "Verified profile",
+    "hi-IN": "सत्यापित प्रोफ़ाइल"
+  },
+  Secure: {
+    "en-IN": "Secure",
+    "hi-IN": "सुरक्षित"
+  },
+  Assistant: {
+    "en-IN": "Assistant",
+    "hi-IN": "सहायक"
+  },
+  Live: {
+    "en-IN": "Live",
+    "hi-IN": "सक्रिय"
+  },
+  StartWithVoice: {
+    "en-IN": "Start with your voice or a quick text.",
+    "hi-IN": "अपनी आवाज़ या त्वरित टेक्स्ट से शुरू करें."
+  },
+  TrySample: {
+    "en-IN": "Try a sample like balance, send money, or schemes.",
+    "hi-IN": "बैलेंस, पैसे भेजने या योजनाओं जैसे नमूने आज़माएँ."
+  },
+  OfflineDemo: {
+    "en-IN": "Offline demo • safe for showcase",
+    "hi-IN": "ऑफ़लाइन डेमो • दिखाने के लिए सुरक्षित"
+  },
+  CopySample: {
+    "en-IN": "Copy sample",
+    "hi-IN": "नमूना कॉपी करें"
+  },
+  SampleCommandText: {
+    "en-IN": "Try: 'balance' or 'send 200 to Sita'",
+    "hi-IN": "कोशिश करें: 'बैलेंस' या 'सीता को 200 भेजो'"
+  },
+  YourBalanceIs: {
+    "en-IN": "Your balance is",
+    "hi-IN": "आपका बैलेंस है"
+  },
+  ConfirmSend: {
+    "en-IN": "Confirm: send",
+    "hi-IN": "पुष्टि करें: भेजें"
+  },
+  To: {
+    "en-IN": "to",
+    "hi-IN": "को"
+  },
+  EligibleForSchemes: {
+    "en-IN": "You are eligible for",
+    "hi-IN": "आप इसके लिए पात्र हैं"
+  },
+  KycUploadAadhaar: {
+    "en-IN": "KYC verification required. Please upload Aadhaar.",
+    "hi-IN": "KYC सत्यापन आवश्यक है. कृपया आधार अपलोड करें."
   }
 };
 

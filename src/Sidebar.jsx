@@ -18,7 +18,7 @@ export default function Sidebar({ route, setRoute, lang = 'en-IN' }) {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <img
-          src="/assets/logo.png"
+          src="/assets/logo.png?v=2"
           alt="Hisab-Kitab logo"
           className="sidebar-logo"
           onError={(e) => {
@@ -26,7 +26,10 @@ export default function Sidebar({ route, setRoute, lang = 'en-IN' }) {
             e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44"><rect width="100%" height="100%" fill="%23111" stroke="%23333" rx="12"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="%23ffffff">HK</text></svg>';
           }}
         />
-        <div className="sidebar-brand-text">Hisab-Kitab</div>
+        <div>
+          <div className="sidebar-brand-text">Hisab-Kitab</div>
+          <div className="sidebar-brand-subtitle">{t('Tagline1', lang)}</div>
+        </div>
       </div>
 
       <nav className="sidebar-nav">
@@ -43,7 +46,10 @@ export default function Sidebar({ route, setRoute, lang = 'en-IN' }) {
       </nav>
 
       <div className="sidebar-footer">
-        {t('Tagline1', lang)}<br/>{t('Tagline2', lang)}
+        <div className="trust-card">
+          <div className="trust-card-label">{t('ProtectedMode', lang)}</div>
+          <div className="trust-card-text">{t('Tagline1', lang)} {t('Tagline2', lang)}</div>
+        </div>
       </div>
     </aside>
   );
