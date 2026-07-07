@@ -26,3 +26,5 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/kyc', require('./routes/kyc'));
 
 app.use('/api/education', require('./routes/education'));
+app.use('/api/schemes', require('./routes/schemes'));
+app.use('/api/savings-plans', require('./routes/savings'));

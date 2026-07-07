@@ -1,5 +1,6 @@
 import React from 'react'
 import Sidebar from './Sidebar'
+import BottomNav from './BottomNav'
 import { Bell, Search, UserCircle } from 'lucide-react'
 
 import { t } from './translations'
@@ -45,10 +46,11 @@ export default function AppShell({ children, route, setRoute, lang = 'en-IN' }) 
           </div>
         </header>
         
-        <main className="dashboard-main">
+        <main className="dashboard-main" style={{ paddingBottom: '80px' }}>
           {children}
         </main>
       </div>
+      <BottomNav route={route} setRoute={setRoute} lang={lang} />
     </div>
   )
 }

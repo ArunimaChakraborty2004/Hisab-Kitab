@@ -1,74 +1,81 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { t } from './translations'
+import { Mic, Volume2, Share2 } from 'lucide-react'
 import './SchemesPage.scss'
 
 export default function SchemesPage({ lang = 'en-IN' }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
 
-  const schemes = [
-    {
-      id: 'myscheme',
-      title: 'myScheme Portal',
-      desc: 'National one‑stop platform to discover and apply for government schemes.',
-      link: 'https://www.myscheme.gov.in',
-      category: 'general',
-      icon: '🏛️'
-    },
-    {
-      id: 'pmmvy',
-      title: 'Pradhan Mantri Matru Vandana Yojana (PMMVY)',
-      desc: 'Cash incentive scheme for pregnant and lactating women.',
-      link: 'https://pmmvy.gov.in',
-      category: 'health',
-      icon: '🤰'
-    },
-    {
-      id: 'standup',
-      title: 'Stand Up India',
-      desc: 'Loans for women entrepreneurs to start new ventures.',
-      link: 'https://www.standupmitra.in',
-      category: 'business',
-      icon: '💼'
-    },
-    {
-      id: 'ssy',
-      title: 'Sukanya Samriddhi Yojana',
-      desc: 'Savings scheme for girl children (via banks/post offices).',
-      link: 'https://www.indiapost.gov.in/Financial/Pages/Content/Post-Office-Savings-Schemes.aspx',
-      category: 'savings',
-      icon: '👧'
-    },
-    {
-      id: 'ujjawala',
-      title: 'Ujjawala Scheme',
-      desc: 'Rescue, rehabilitation, and reintegration of trafficked women.',
-      link: 'https://wcd.nic.in/schemes/ujjawala-scheme',
-      category: 'health',
-      icon: '🤝'
-    },
-    {
-      id: 'hostel',
-      title: 'Working Women Hostel',
-      desc: 'Safe and affordable accommodation for working women.',
-      link: 'https://wcd.nic.in/schemes/working-women-hostel',
-      category: 'general',
-      icon: '🏢'
-    },
-    {
-      id: 'osc',
-      title: 'One Stop Centre Scheme',
-      desc: 'Support services for women facing violence.',
-      link: 'https://wcd.nic.in/schemes/one-stop-centre-scheme',
-      category: 'health',
-      icon: '🛡️'
-    }
-  ]
+  const [schemes, setSchemes] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    import('./api/schemesApi').then(api => {
+      api.getSchemes().then(data => {
+        if (data && data.length > 0) setSchemes(data)
+        setLoading(false)
+      })
+    })
+  }, [])
 
   function open(url) {
     const win = window.open(url, '_blank', 'noopener,noreferrer')
-    if (!win) alert('Popup blocked. Please allow popups for this site.')
+    if (win) win.focus()
   }
+
+  // Voice Search (Speech Recognition)
+  const [isListening, setIsListening] = useState(false);
+  const startListening = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Voice search is not supported in this browser.");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = lang === 'en-IN' ? 'en-IN' : lang; // Adjust as needed
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (e) => {
+      setSearchQuery(e.results[0][0].transcript);
+      setIsListening(false);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+  };
+
+  // Text-to-Speech
+  const readAloud = (title, desc) => {
+    if (!('speechSynthesis' in window)) {
+      alert("Text-to-speech is not supported in your browser.");
+      return;
+    }
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+    
+    const utterance = new SpeechSynthesisUtterance(`${title}. ${desc}`);
+    
+    // Sometimes strict language codes cause it to fail silently if the voice isn't installed.
+    // Try to find a voice that matches the language, otherwise use default.
+    const voices = window.speechSynthesis.getVoices();
+    const targetLang = lang === 'en-IN' ? 'en-IN' : lang; // e.g. hi-IN
+    
+    if (voices.length > 0) {
+      const preferredVoice = voices.find(v => v.lang.includes(targetLang) || v.lang.includes(targetLang.split('-')[0]));
+      if (preferredVoice) utterance.voice = preferredVoice;
+    }
+    
+    // Set some default properties to make it sound better
+    utterance.rate = 0.9; 
+    utterance.pitch = 1;
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // WhatsApp Share
+  const shareToWhatsApp = (title, link) => {
+    const text = encodeURIComponent(`Check out this Government Scheme: ${title}\nApply here: ${link}`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
 
   const filteredSchemes = schemes.filter(s => {
     const matchesCategory = filterType === 'all' || s.category === filterType
@@ -88,13 +95,24 @@ export default function SchemesPage({ lang = 'en-IN' }) {
 
       <div className="sch-controls">
         <div className="sch-search">
-          <svg className="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input 
-            type="text" 
-            placeholder="Search for schemes, benefits, or keywords..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
+          <div className="sch-search-wrap" style={{ position: 'relative' }}>
+            <span className="icon" style={{ position: 'absolute', left: 12, top: 10 }}>🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search schemes..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              style={{ paddingLeft: 36, paddingRight: 40 }}
+            />
+            <button 
+              className="icon-btn" 
+              onClick={startListening}
+              title="Voice Search"
+              style={{ position: 'absolute', right: 8, top: 8, color: isListening ? 'red' : 'inherit' }}
+            >
+              <Mic size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="sch-filters">
@@ -107,7 +125,11 @@ export default function SchemesPage({ lang = 'en-IN' }) {
       </div>
 
       <div className="sch-grid">
-        {filteredSchemes.length === 0 ? (
+        {loading ? (
+          <div className="sch-empty">
+            <h3>Loading schemes...</h3>
+          </div>
+        ) : filteredSchemes.length === 0 ? (
           <div className="sch-empty">
             <div className="icon">🔍</div>
             <h3>No schemes found</h3>
@@ -115,7 +137,7 @@ export default function SchemesPage({ lang = 'en-IN' }) {
           </div>
         ) : (
           filteredSchemes.map((s, index) => (
-            <div className="sch-card" key={s.id} style={{ animationDelay: `${index * 0.05}s` }}>
+            <div className="sch-card" key={s._id || s.id || index} style={{ animationDelay: `${index * 0.05}s` }}>
               <div className="sch-card-header">
                 <div className="sch-icon-wrap">{s.icon}</div>
                 <div>
@@ -128,9 +150,15 @@ export default function SchemesPage({ lang = 'en-IN' }) {
                 </div>
               </div>
               <p className="sch-desc">{s.desc}</p>
-              <div className="sch-actions" style={{ display: 'flex', gap: 12 }}>
+              <div className="sch-actions" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <button className="secondary-btn" onClick={() => open(s.link)}>Details</button>
                 <button className="primary-btn" onClick={() => open(s.link)}>{t('ApplyNow', lang)}</button>
+                <button className="icon-btn" title="Read Aloud" onClick={() => readAloud(s.title, s.desc)}>
+                  <Volume2 size={18} color="#3b82f6" />
+                </button>
+                <button className="icon-btn" title="Share to WhatsApp" onClick={() => shareToWhatsApp(s.title, s.link)}>
+                  <Share2 size={18} color="#10b981" />
+                </button>
               </div>
             </div>
           ))
