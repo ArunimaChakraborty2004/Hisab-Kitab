@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const Kyc = require('../models/Kyc');
 
 // ensure directories exist
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
@@ -40,6 +41,7 @@ const upload = multer({
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const documentType = req.body.documentType || 'aadhar';
 
     const savedFile = req.file.filename;
     const original = req.file.originalname;
@@ -94,9 +96,21 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       writeStream.on('error', reject);
     });
 
+    // Save to MongoDB
+    const kycRecord = new Kyc({
+      documentType,
+      filename: savedFile,
+      originalName: original,
+      url: savedPath,
+      receiptUrl: receiptPublicPath,
+      status: 'pending'
+    });
+    await kycRecord.save();
+
     // return info and URL to receipt
     res.json({
       success: true,
+      documentType: documentType,
       filename: savedFile,
       url: savedPath,
       receiptUrl: receiptPublicPath,

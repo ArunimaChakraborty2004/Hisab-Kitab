@@ -28,3 +28,4 @@ app.use('/api/kyc', require('./routes/kyc'));
 app.use('/api/education', require('./routes/education'));
 app.use('/api/schemes', require('./routes/schemes'));
 app.use('/api/savings-plans', require('./routes/savings'));
+app.use('/api/quiz', require('./routes/quiz'));

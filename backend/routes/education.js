@@ -1,40 +1,27 @@
 // backend/routes/education.js
 const express = require('express');
 const router = express.Router();
+const Lesson = require('../models/Lesson');
 
-// sample data (you can later move to DB)
-const lessons = [
-  {
-    id: "why-save-money",
-    title: "🌱 Why Save Money?",
-    summary: "Learn the importance of saving for future needs.",
-    content: "Saving money helps you build emergency funds, reach goals and gain financial freedom. (Full article text goes here...)",
-    category: "Savings",
-    difficulty: "Beginner",
-    readTime: "3 min"
-  },
-  {
-    id: "smart-spending",
-    title: "🛒 Smart Spending",
-    summary: "Tips to manage expenses wisely.",
-    content: "Smart spending is tracking expenses, budgeting, and prioritizing needs. (Full article text goes here...)",
-    category: "Budgeting",
-    difficulty: "Beginner",
-    readTime: "4 min"
-  },
-  {
-    id: "gov-schemes",
-    title: "🏛️ Government Schemes",
-    summary: "Know about schemes available for women and families.",
-    content: "Summary of common schemes, eligibility, and how to apply. (Full article text goes here...)",
-    category: "Schemes",
-    difficulty: "All",
-    readTime: "5 min"
+router.get('/', async (req, res) => {
+  try {
+    const lang = req.query.lang === 'hi' ? 'hi' : 'en';
+    const lessons = await Lesson.find({});
+    // map _id to id and select language
+    const formatted = lessons.map(l => ({
+      id: l._id,
+      title: l.title[lang] || l.title.en,
+      summary: l.summary[lang] || l.summary.en,
+      content: l.content[lang] || l.content.en,
+      category: l.category[lang] || l.category.en,
+      difficulty: l.difficulty,
+      readTime: l.readTime,
+      thumbnailColor: l.thumbnailColor
+    }));
+    res.json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch lessons" });
   }
-];
-
-router.get('/', (req, res) => {
-  res.json(lessons);
 });
 
 module.exports = router;

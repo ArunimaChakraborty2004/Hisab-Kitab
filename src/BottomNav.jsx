@@ -8,7 +8,8 @@ export default function BottomNav({ route, setRoute, lang }) {
     { id: 'home', icon: Home, label: t('Home', lang) },
     { id: 'transactions', icon: List, label: t('Transactions', lang) },
     { id: 'schemes', icon: Shield, label: t('Schemes', lang) },
-    { id: 'savings', icon: TrendingUp, label: t('Savings', lang) }
+    { id: 'savings', icon: TrendingUp, label: t('Savings', lang) },
+    { id: 'quiz', icon: BookOpen, label: t('Quiz', lang) }
   ];
 
   return (

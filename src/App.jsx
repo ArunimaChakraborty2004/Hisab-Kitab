@@ -7,6 +7,7 @@ import TransactionsPage from './TransactionsPage'
 import SavingsSimulator from './SavingsSimulator'
 import KYCPage from './KYCPage'
 import EducationHub from './EducationHub'
+import QuizModule from './QuizModule'
 import HelpSupport from './HelpSupport'
 import ProfilePage from './ProfilePage'
 import AppShell from './AppShell'
@@ -519,6 +520,8 @@ export default function App(){
           <KYCPage lang={lang} />          // ✅ lang prop added
         ) : route === 'education' ? (
           <EducationHub lang={lang} />     // ✅ lang prop added
+        ) : route === 'quiz' ? (
+          <QuizModule lang={lang} />       // ✅ lang prop added
         ) : route === 'help' ? (
           <HelpSupport lang={lang} />      // KEEP HelpSupport intact
         ) : route === 'profile' ? (

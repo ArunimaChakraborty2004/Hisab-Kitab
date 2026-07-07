@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, CreditCard, ClipboardList, PiggyBank, ShieldCheck, GraduationCap, HelpCircle, User } from 'lucide-react';
+import { Home, CreditCard, ClipboardList, PiggyBank, ShieldCheck, GraduationCap, HelpCircle, User, Trophy } from 'lucide-react';
 import { t } from './translations';
 
 export default function Sidebar({ route, setRoute, lang = 'en-IN' }) {
@@ -10,6 +10,7 @@ export default function Sidebar({ route, setRoute, lang = 'en-IN' }) {
     { id: 'savings', label: t('Savings', lang), icon: <PiggyBank size={18} /> },
     { id: 'kyc', label: t('KYC', lang), icon: <ShieldCheck size={18} /> },
     { id: 'education', label: t('Education', lang), icon: <GraduationCap size={18} /> },
+    { id: 'quiz', label: t('Quiz', lang), icon: <Trophy size={18} /> },
     { id: 'help', label: t('Help', lang), icon: <HelpCircle size={18} /> },
     { id: 'profile', label: t('Profile', lang), icon: <User size={18} /> }
   ];
