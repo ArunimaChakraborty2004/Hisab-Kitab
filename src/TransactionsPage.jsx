@@ -7,14 +7,13 @@ import {
   deleteTransaction as apiDeleteTransaction,
 } from "./api/transactionsApi";
 import { t } from "./translations";
+import "./TransactionsPage.scss";
 
 export default function TransactionsPage({ lang = 'en-IN' }) {
-  const [transactions, setTransactions] = useState([
-    { id: "local-1", type: "income", label: "Self Help Group Loan", amount: 5000, date: "2025-11-01" },
-    { id: "local-2", type: "expense", label: "Groceries", amount: 1200, date: "2025-11-05" },
-    { id: "local-3", type: "saving", label: "Monthly Savings", amount: 1000, date: "2025-11-10" },
-  ]);
-
+  const [transactions, setTransactions] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
   const [newTx, setNewTx] = useState({ type: "expense", label: "", amount: "", date: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,6 +26,49 @@ export default function TransactionsPage({ lang = 'en-IN' }) {
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
   const totalExpense = transactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
   const totalSaving = transactions.filter((t) => t.type === "saving").reduce((s, t) => s + Number(t.amount), 0);
+
+  // smart insights
+  let insightMsg = "Add transactions to see insights!";
+  if (totalExpense > totalIncome && totalIncome > 0) {
+    insightMsg = "Warning: Your expenses exceed your income this period.";
+  } else if (totalSaving > 0) {
+    insightMsg = `Great job! You've set aside ₹${totalSaving.toLocaleString()} in savings.`;
+  } else if (totalIncome > 0 && totalExpense > 0) {
+    insightMsg = `You've spent ${Math.round((totalExpense / totalIncome) * 100)}% of your income.`;
+  }
+
+  // filtered and sorted list
+  const filteredTransactions = transactions.filter(t => {
+    const matchesFilter = filterType === "all" || t.type === filterType;
+    const matchesSearch = t.label.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  }).sort((a, b) => {
+    if (sortBy === "newest") return new Date(b.date) - new Date(a.date);
+    if (sortBy === "oldest") return new Date(a.date) - new Date(b.date);
+    if (sortBy === "highest") return b.amount - a.amount;
+    if (sortBy === "lowest") return a.amount - b.amount;
+    return 0;
+  });
+
+  // export to CSV
+  const handleExportCSV = () => {
+    if (filteredTransactions.length === 0) return alert("No transactions to export.");
+    const headers = ["Date", "Type", "Description", "Amount (INR)"];
+    const rows = filteredTransactions.map(t => [`="${t.date}"`, t.type, t.label, t.amount]);
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(r => r.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `transactions_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // load transactions from backend
   useEffect(() => {
@@ -45,12 +87,8 @@ export default function TransactionsPage({ lang = 'en-IN' }) {
           date: d.date ? String(d.date).slice(0, 10) : new Date().toISOString().slice(0, 10),
           raw: d,
         }));
-        // merge: backend items first, then local fallback (avoid duplicates)
-        setTransactions((prev) => {
-          const localIds = new Set(prev.map((p) => p.id));
-          const merged = [...normalized, ...prev.filter((p) => !localIds.has(p.id))];
-          return merged;
-        });
+        
+        setTransactions(normalized);
       } catch (err) {
         console.error("fetch error", err);
         setError("Could not load transactions. Check backend.");
@@ -83,10 +121,17 @@ export default function TransactionsPage({ lang = 'en-IN' }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "48%",
+        cutout: "60%",
+        animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
-          tooltip: { bodyFont: { size: 13 }, titleFont: { size: 13 } },
+          tooltip: { 
+            bodyFont: { size: 14, family: 'Inter' }, 
+            titleFont: { size: 14, family: 'Inter' },
+            padding: 12,
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            cornerRadius: 8
+          },
         },
       },
     });
@@ -175,151 +220,181 @@ export default function TransactionsPage({ lang = 'en-IN' }) {
     }
   }
 
-  // embedded CSS inside component (no index.css change required)
-  const embeddedStyle = `
-    /* TransactionsPage embedded styles */
-    .tx-page { color: var(--text-primary); padding: 18px; }
-    .tx-page h2 { font-size: 28px; font-weight: 800; margin-bottom: 16px; color: var(--text-primary); letter-spacing: -0.5px; }
-
-    .tx-hero { display:flex; gap:20px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
-    .tx-summary { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
-    .tx-badge { display:flex; align-items:center; gap:10px; background: #ffffff; padding:14px 18px; border-radius:12px; border:1px solid var(--glass-border); min-width:150px; box-shadow: var(--glass-shadow); }
-    .tx-badge .emoji { font-size:22px; }
-    .tx-badge .amount { font-weight:800; font-size:18px; margin-left:4px; color: var(--text-primary); }
-
-    .tx-chart-wrap { height:160px; width:100%; display:flex; align-items:center; justify-content:center; background: #ffffff; padding:12px; border-radius:12px; border:1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
-    .tx-legend { display:flex; gap:16px; align-items:center; justify-content:center; margin-top:8px; color: var(--text-secondary); font-weight:600; }
-
-    .legend-item { display:flex; align-items:center; gap:6px; font-size:13.5px; }
-    .swatch { width:18px; height:9px; border-radius:3px; display:inline-block; }
-
-    .tx-list { display:grid; gap:10px; margin-top:14px; margin-bottom:18px; }
-    .tx-card { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:#ffffff; color: var(--text-primary); border-radius:12px; box-shadow: var(--glass-shadow); border:1px solid var(--glass-border); transition: box-shadow 0.2s; }
-    .tx-card:hover { box-shadow: var(--glass-shadow-lg); border-color: #cbd5e1; }
-    .tx-card .icon { font-size:24px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:10px; background: #f1f5f9; flex-shrink:0; }
-    .tx-card .meta .title { font-weight:700; font-size:15.5px; color: var(--text-primary); }
-    .tx-card .meta .date { font-size:13px; color: var(--text-secondary); margin-top:3px; }
-
-    .right { display:flex; gap:10px; align-items:center; }
-    .tx-amount { font-weight:800; font-size:17px; }
-    .tx-amount.income { color: #059669; }
-    .tx-amount.expense { color: #dc2626; }
-    .tx-amount.saving { color: #2563eb; }
-
-    .del { background:transparent; border:0; cursor:pointer; font-size:16px; opacity:0.5; transition: opacity 0.2s; }
-    .del:hover { opacity: 1; }
-
-    .tx-form { margin-top:20px; padding:20px; border-radius:14px; background: #ffffff; border:1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
-    .tx-form h3 { margin:0 0 16px 0; font-size:17px; font-weight:700; color: var(--text-primary); }
-    .tx-form input, .tx-form select { padding:11px 14px; border-radius:10px; border:1.5px solid var(--glass-border); background:#ffffff; color: var(--text-primary); font-size:14px; }
-    .tx-form button { cursor:pointer; }
-
-    .tx-toast { position:fixed; right:20px; bottom:80px; background: #059669; color: #ffffff; padding:12px 18px; border-radius:10px; font-weight:700; font-size:14px; box-shadow: 0 8px 24px rgba(5,150,105,0.35); z-index:9999; }
-    .tx-error { color: #dc2626; font-size:14px; font-weight:600; margin-bottom:12px; background:#fff5f5; padding:10px 14px; border-radius:8px; border: 1px solid #fecaca; }
-
-    @media (max-width:900px) {
-      .tx-hero { flex-direction:column; align-items:stretch; }
-      .tx-chart-wrap { width:100% !important; }
-      .tx-badge { min-width: auto; justify-content:flex-start; }
-    }
-  `;
+ 
 
   return (
     <div className="tx-page">
-      <style>{embeddedStyle}</style>
+      
+      <div className="bg-animation"></div>
 
-      <h2>{t('Transactions', lang)}</h2>
+      <div className="tx-page-header">
+        <h2>{t('Transactions', lang)}</h2>
+      </div>
 
       <div className="tx-hero">
-        <div style={{ flex: 1 }}>
-          <div className="tx-summary" aria-hidden>
-            <div className="tx-badge" title="Total income">
-              <span className="emoji">💰</span>
-              <div>
-                <div className="amount">₹{totalIncome.toLocaleString()}</div>
-                <div style={{ fontWeight: 600, marginTop: 2, color: "rgba(234,246,255,0.85)" }}>{t('Income', lang)}</div>
-              </div>
+        <div className="tx-summary" aria-hidden>
+          <div className="tx-badge income" title="Total income">
+            <div className="emoji-wrap">💰</div>
+            <div>
+              <div className="amount">₹{totalIncome.toLocaleString()}</div>
+              <div className="label">{t('Income', lang)}</div>
             </div>
+          </div>
 
-            <div className="tx-badge" title="Total expenses">
-              <span className="emoji">🛒</span>
-              <div>
-                <div className="amount">₹{totalExpense.toLocaleString()}</div>
-                <div style={{ fontWeight: 600, marginTop: 2, color: "rgba(234,246,255,0.85)" }}>{t('Expenses', lang)}</div>
-              </div>
+          <div className="tx-badge expense" title="Total expenses">
+            <div className="emoji-wrap">🛒</div>
+            <div>
+              <div className="amount">₹{totalExpense.toLocaleString()}</div>
+              <div className="label">{t('Expenses', lang)}</div>
             </div>
+          </div>
 
-            <div className="tx-badge" title="Total savings">
-              <span className="emoji">🌱</span>
-              <div>
-                <div className="amount">₹{totalSaving.toLocaleString()}</div>
-                <div style={{ fontWeight: 600, marginTop: 2, color: "rgba(234,246,255,0.85)" }}>{t('TotalSavings', lang)}</div>
-              </div>
+          <div className="tx-badge saving" title="Total savings">
+            <div className="emoji-wrap">🌱</div>
+            <div>
+              <div className="amount">₹{totalSaving.toLocaleString()}</div>
+              <div className="label">{t('TotalSavings', lang)}</div>
             </div>
           </div>
         </div>
 
-        <div style={{ width: 360 }}>
+        <div style={{ flex: "0 0 320px", minWidth: "320px" }}>
           <div className="tx-chart-wrap">
             <canvas ref={chartRef}></canvas>
           </div>
           <div className="tx-legend" aria-hidden>
-            <div className="legend-item"><span className="swatch" style={{ background: "#4caf50" }} />{t('Income', lang)}</div>
-            <div className="legend-item"><span className="swatch" style={{ background: "#ff944d" }} />{t('Expenses', lang)}</div>
-            <div className="legend-item"><span className="swatch" style={{ background: "#2196f3" }} />{t('TotalSavings', lang)}</div>
+            <div className="legend-item"><span className="swatch" style={{ background: "#10b981" }} />{t('Income', lang)}</div>
+            <div className="legend-item"><span className="swatch" style={{ background: "#ef4444" }} />{t('Expenses', lang)}</div>
+            <div className="legend-item"><span className="swatch" style={{ background: "#3b82f6" }} />{t('TotalSavings', lang)}</div>
+          </div>
+          
+          <div className="tx-insight">
+            <span style={{ fontSize: "20px" }}>💡</span>
+            {insightMsg}
           </div>
         </div>
       </div>
 
-      {loading && <div style={{ margin: "12px 0", color: "#d1eefe" }}>Working…</div>}
-      {error && <div style={{ margin: "12px 0", color: "tomato", fontWeight: 700 }}>{error}</div>}
+      {loading && <div style={{ margin: "12px 0", color: "#3b82f6", fontWeight: 600 }}>Working…</div>}
+      {error && <div style={{ margin: "12px 0", color: "#ef4444", fontWeight: 700 }}>{error}</div>}
 
-      <div className="tx-list" aria-live="polite">
-        {transactions.map((txn) => (
-          <div className="tx-card" key={txn.id}>
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <div className="icon">{txn.type === "income" ? "💰" : txn.type === "expense" ? "🛒" : "🌱"}</div>
-              <div className="meta">
-                <div className="title">{t(txn.label, lang) /* Optional localized category */}</div>
-                <div className="date">{t('Date', lang)}: {txn.date}</div>
-              </div>
-            </div>
-
-            <div className="right">
-              <div className={`tx-amount ${txn.type === "income" ? "income" : txn.type === "expense" ? "expense" : "saving"}`}>
-                ₹{Number(txn.amount).toLocaleString()}
-              </div>
-              <button className="del" onClick={() => handleDelete(txn.id)} title="Delete">🗑️</button>
-            </div>
+      <div className="tx-main-content">
+        <div>
+          <div className="tx-list-header">
+            <h3>Recent History</h3>
           </div>
-        ))}
-      </div>
-
-      <div className="tx-form">
-        <h3 style={{ marginTop: 0 }}>➕ {t('AddTransaction', lang)}</h3>
-        <form onSubmit={handleAddTransaction} style={{ display: "grid", gap: 10 }}>
-          <select value={newTx.type} onChange={(e) => setNewTx({ ...newTx, type: e.target.value })}>
-            <option value="income">{t('Income', lang)}</option>
-            <option value="expense">{t('Expenses', lang)}</option>
-            <option value="saving">{t('TotalSavings', lang)}</option>
-          </select>
-
-          <input type="text" placeholder={t('WhatFor', lang)} value={newTx.label} onChange={(e) => setNewTx({ ...newTx, label: e.target.value })} />
-          <input type="number" placeholder={t('AmountLabel', lang)} value={newTx.amount} onChange={(e) => setNewTx({ ...newTx, amount: e.target.value })} />
-          <input type="date" value={newTx.date} onChange={(e) => setNewTx({ ...newTx, date: e.target.value })} />
-
-          <div style={{ display: "flex", gap: 8 }}>
-            <button type="submit" disabled={loading} className="primary-btn" style={{ flex: 1 }}>
-              {t('Add', lang)}
-            </button>
-            <button type="button" onClick={() => setNewTx({ type: "expense", label: "", amount: "", date: "" })} className="secondary-btn">
-              {t('Reset', lang)}
+          
+          <div className="tx-controls">
+            <div className="tx-search">
+              <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input 
+                type="text" 
+                placeholder="Search transactions..." 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+              />
+            </div>
+            
+            <select className="tx-sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="highest">Highest Amount</option>
+              <option value="lowest">Lowest Amount</option>
+            </select>
+            
+            <button className="btn-export" onClick={handleExportCSV} title="Export to CSV">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export
             </button>
           </div>
-        </form>
+
+          <div className="tx-filters">
+            <button className={`filter-btn ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>All</button>
+            <button className={`filter-btn ${filterType === 'income' ? 'active' : ''}`} onClick={() => setFilterType('income')}>Income</button>
+            <button className={`filter-btn ${filterType === 'expense' ? 'active' : ''}`} onClick={() => setFilterType('expense')}>Expenses</button>
+            <button className={`filter-btn ${filterType === 'saving' ? 'active' : ''}`} onClick={() => setFilterType('saving')}>Savings</button>
+          </div>
+          
+          <div className="tx-list" aria-live="polite">
+            {filteredTransactions.length === 0 ? (
+              <div className="empty-state">
+                <div className="icon">🧾</div>
+                <h4>No transactions found</h4>
+                <p>{transactions.length === 0 ? "Add your first income or expense to start tracking!" : "Try adjusting your filters or search query."}</p>
+              </div>
+            ) : (
+              filteredTransactions.map((txn) => (
+                <div className="tx-card" key={txn.id}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div className="icon">{txn.type === "income" ? "💰" : txn.type === "expense" ? "🛒" : "🌱"}</div>
+                    <div className="meta">
+                      <div className="title">{t(txn.label, lang) /* Optional localized category */}</div>
+                      <div className="date">{txn.date}</div>
+                    </div>
+                  </div>
+
+                  <div className="right">
+                    <div className={`tx-amount ${txn.type === "income" ? "income" : txn.type === "expense" ? "expense" : "saving"}`}>
+                      {txn.type === "income" ? "+" : "-"} ₹{Number(txn.amount).toLocaleString()}
+                    </div>
+                    <button className="del" onClick={() => handleDelete(txn.id)} title="Delete" aria-label="Delete transaction">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="tx-form">
+          <h3>
+            <span style={{ fontSize: "24px" }}>✨</span> {t('AddTransaction', lang)}
+          </h3>
+          <form onSubmit={handleAddTransaction}>
+            <div className="form-group">
+              <label>Transaction Type</label>
+              <select value={newTx.type} onChange={(e) => setNewTx({ ...newTx, type: e.target.value })}>
+                <option value="income">{t('Income', lang)}</option>
+                <option value="expense">{t('Expenses', lang)}</option>
+                <option value="saving">{t('TotalSavings', lang)}</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <input type="text" placeholder={t('WhatFor', lang)} value={newTx.label} onChange={(e) => setNewTx({ ...newTx, label: e.target.value })} required />
+            </div>
+
+            <div className="form-group">
+              <label>Amount (₹)</label>
+              <input type="number" min="0" step="0.01" placeholder={t('AmountLabel', lang)} value={newTx.amount} onChange={(e) => setNewTx({ ...newTx, amount: e.target.value })} required />
+            </div>
+
+            <div className="form-group">
+              <label>Date</label>
+              <input type="date" value={newTx.date} onChange={(e) => setNewTx({ ...newTx, date: e.target.value })} required />
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" disabled={loading} className="btn-submit">
+                <span>{t('Add', lang)}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+              <button type="button" onClick={() => setNewTx({ type: "expense", label: "", amount: "", date: "" })} className="btn-reset">
+                {t('Reset', lang)}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      {successMsg && <div className="tx-toast">{successMsg}</div>}
+      {successMsg && (
+        <div className="tx-toast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          {successMsg}
+        </div>
+      )}
     </div>
   );
 }
