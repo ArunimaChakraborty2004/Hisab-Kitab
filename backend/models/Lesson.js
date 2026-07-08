@@ -19,7 +19,8 @@ const lessonSchema = new mongoose.Schema({
   },
   difficulty: { type: String, required: true },
   readTime: { type: String, required: true },
-  thumbnailColor: { type: String, default: '#3b82f6' }
+  thumbnailColor: { type: String, default: '#3b82f6' },
+  youtubeId: { type: String }
 });
 
 module.exports = mongoose.model('Lesson', lessonSchema);

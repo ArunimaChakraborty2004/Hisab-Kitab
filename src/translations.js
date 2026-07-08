@@ -376,16 +376,16 @@ export const translations = {
     "hi-IN": "सुनियोजित खर्च गति"
   },
   VoiceFirstMoneySupport: {
-    "en-IN": "Voice-first money support",
-    "hi-IN": "कथन प्रधान पैसे सहायता"
+    "en-IN": "Your money. Your power.",
+    "hi-IN": "आपका पैसा। आपकी शक्ति।"
   },
   DailyMoneyView: {
-    "en-IN": "Your daily money view, ready when you are.",
-    "hi-IN": "आप तैयार हों तो आपकी दैनिक पैसे झलक."
+    "en-IN": "Take control of every rupee. Build savings, explore government benefits, and grow financially — all in your language.",
+    "hi-IN": "हर रुपये पर नियंत्रण रखें। बचत बनाएं, सरकारी लाभ जानें, और वित्तीय रूप से आगे बढ़ें — अपनी भाषा में।"
   },
   AskBalanceTransfer: {
-    "en-IN": "Ask about balance, transfers, government schemes, KYC, or savings in your preferred language.",
-    "hi-IN": "बैलेंस, ट्रांसफर, सरकारी योजना, KYC, या बचत के बारे में अपनी भाषा में पूछें."
+    "en-IN": "Ask about loans, schemes, savings, or your balance. Speak or type in Hindi or English — we understand you.",
+    "hi-IN": "लोन, योजनाएं, बचत, या अपना बैलेंस पूछें। हिंदी या अंग्रेजी में बोलें या टाइप करें — हम समझते हैं।"
   },
   ProtectedMode: {
     "en-IN": "Protected mode",

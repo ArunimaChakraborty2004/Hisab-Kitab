@@ -1,4 +1,4 @@
-Hisab-Kitab React Prototype - v2
+Hisab-Kitab - Personal Finance & Expense Tracker App
 ============================
 
 This updated prototype includes:

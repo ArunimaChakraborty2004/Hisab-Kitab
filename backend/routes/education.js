@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
       category: l.category[lang] || l.category.en,
       difficulty: l.difficulty,
       readTime: l.readTime,
-      thumbnailColor: l.thumbnailColor
+      thumbnailColor: l.thumbnailColor,
+      youtubeId: l.youtubeId
     }));
     res.json(formatted);
   } catch (err) {

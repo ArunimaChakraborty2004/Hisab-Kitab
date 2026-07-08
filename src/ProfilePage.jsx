@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { t } from "./translations";
+import { UserCircle, Settings, Camera, Save, X, Edit3, CheckCircle2 } from "lucide-react";
+import "./ProfilePage.scss";
 
 const STORAGE_KEY = "finsakhi_profile_v1";
 
@@ -8,9 +10,12 @@ const SAMPLE = {
   village: "Bengaluru Rural",
   language: "English",
   group: "Self Help Group A",
-  phone: "",
-  email: "",
+  phone: "+91 98765 43210",
+  email: "arunima@example.com",
   avatarUrl: "",
+  notifications: true,
+  appLock: false,
+  smsAlerts: true
 };
 
 export default function ProfilePage({ lang = 'en-IN' }) {
@@ -27,8 +32,9 @@ export default function ProfilePage({ lang = 'en-IN' }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const obj = JSON.parse(raw);
-        setProfile(obj);
-        setDraft(obj);
+        const merged = { ...SAMPLE, ...obj };
+        setProfile(merged);
+        setDraft(merged);
       }
     } catch {}
   }, []);
@@ -81,215 +87,181 @@ export default function ProfilePage({ lang = 'en-IN' }) {
       setProfile(draft);
       setEditing(false);
       setLoading(false);
-      setToast("Profile updated!");
-      setTimeout(() => setToast(""), 2000);
-    }, 500);
+      setToast(lang.startsWith('hi') ? "प्रोफ़ाइल अपडेट की गई!" : "Profile & Settings Updated!");
+      setTimeout(() => setToast(""), 3000);
+    }, 600);
   }
 
   return (
-    <>
-      {/* EMBEDDED CSS — NO NEED TO EDIT index.css */}
-      <style>{`
-        .profile-wrapper {
-          color: var(--text-primary);
-          padding: 20px;
-        }
-        .profile-grid {
-          display: grid;
-          grid-template-columns: 260px 1fr;
-          gap: 20px;
-        }
-        .profile-card {
-          background: var(--glass-bg);
-          border: 1px solid var(--glass-border);
-          padding: 20px;
-          border-radius: 14px;
-          backdrop-filter: blur(6px);
-        }
-        .avatar-img {
-          width: 110px;
-          height: 110px;
-          border-radius: 14px;
-          object-fit: cover;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-        }
-        .avatar-fallback {
-          width: 110px;
-          height: 110px;
-          border-radius: 14px;
-          background: var(--accent-gradient);
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-size:42px;
-          color: #ffffff;
-          font-weight:900;
-        }
-        .profile-name { font-size: 20px; font-weight: 900; margin-top: 10px; }
-        .profile-sub { color: var(--text-secondary); font-size: 14px; margin-top: 2px; }
+    <div className="profile-wrapper">
+      <div className="profile-header">
+        <h1>
+          <UserCircle size={32} color="#8b5cf6" />
+          {t('Profile', lang) || "Profile & Settings"}
+        </h1>
+        <p>{lang.startsWith('hi') ? "अपनी व्यक्तिगत जानकारी और ऐप प्राथमिकताएं प्रबंधित करें।" : "Manage your personal information and app preferences."}</p>
+      </div>
 
-        .btn {
-          padding: 10px 18px;
-          border-radius: 8px;
-          font-weight: 700;
-          cursor: pointer;
-          border: none;
-          font-size: 14px;
-          transition: all 0.2s;
-        }
-        .btn-edit { background: var(--accent-primary); color: #ffffff; box-shadow: 0 4px 12px rgba(79,70,229,0.25); }
-        .btn-edit:hover { background: #4338ca; }
-        .btn-save { background: #059669; color: #ffffff; }
-        .btn-save:hover { background: #047857; }
-        .btn-cancel { background: #f1f5f9; color: var(--text-primary); border: 1px solid var(--glass-border); }
-        .btn-cancel:hover { background: #e2e8f0; }
-
-        .field {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-        .field-title {
-          font-weight: 800;
-          color: var(--text-secondary);
-        }
-        .field-read {
-          background: #fff;
-          color: var(--text-primary);
-          padding: 12px;
-          border-radius: 8px;
-        }
-        .field input, .field select {
-          padding: 10px;
-          border-radius: 8px;
-          border: none;
-          background: #fff;
-          color: var(--text-primary);
-        }
-        .form-error {
-          color: #ff6b6b;
-          font-weight: 700;
-        }
-        .toast {
-          position: fixed;
-          right: 22px;
-          bottom: 80px;
-          background: #059669;
-          padding: 12px 18px;
-          border-radius: 10px;
-          font-weight: 700;
-          font-size: 14px;
-          color: #ffffff;
-          z-index: 9999;
-          box-shadow: 0 6px 20px rgba(5,150,105,0.35);
-        }
-        @media(max-width:900px){
-          .profile-grid { grid-template-columns: 1fr; }
-        }
-      `}</style>
-
-      <div className="profile-wrapper">
-        <h2 className="card-title">👤 {t('Profile', lang)}</h2>
-
-        <div className="profile-grid">
-          {/* LEFT SIDE */}
-          <div className="profile-card">
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              {profile.avatarUrl ? (
-                <img
-                  src={editing ? draft.avatarUrl || profile.avatarUrl : profile.avatarUrl}
-                  className="avatar-img"
-                  alt="avatar"
-                />
-              ) : (
-                <div className="avatar-fallback">
-                  {profile.name[0].toUpperCase()}
-                </div>
-              )}
-            </div>
-
-            <div className="profile-name">{t(profile.name, lang)}</div>
-            <div className="profile-sub">{t(profile.village, lang)}</div>
-
-            {/* Buttons */}
-            {!editing ? (
-              <button className="primary-btn" onClick={startEdit}>✏️ {t('EditProfile', lang)}</button>
+      {/* AVATAR & QUICK ACTIONS SECTION */}
+      <div className="profile-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="avatar-section">
+          <div className="avatar-wrapper">
+            {profile.avatarUrl || draft.avatarUrl ? (
+              <img
+                src={editing ? draft.avatarUrl || profile.avatarUrl : profile.avatarUrl}
+                className="avatar-img"
+                alt="avatar"
+              />
             ) : (
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                <button className="primary-btn" onClick={saveProfile}>
-                  {loading ? t('SavingText', lang) : `💾 ${t('Save', lang)}`}
-                </button>
-                <button className="secondary-btn" onClick={cancelEdit}>{t('CancelBtn', lang)}</button>
+              <div className="avatar-fallback">
+                {(draft.name || profile.name || "A")[0].toUpperCase()}
               </div>
             )}
-
+            
             {editing && (
-              <>
-                <label style={{ marginTop: 12, fontSize: 12, opacity: 0.8 }}>
-                  {t('UploadAvatar', lang)}
-                </label>
+              <button className="avatar-upload-btn" onClick={() => fileRef.current?.click()}>
+                <Camera size={16} />
                 <input ref={fileRef} type="file" accept="image/*" onChange={onAvatarPick} />
-              </>
+              </button>
             )}
           </div>
 
-          {/* RIGHT SIDE */}
-          <div className="profile-card">
-            <form style={{ display: "grid", gap: 14 }}>
-              {/* Name */}
-              <label className="field">
-                <span className="field-title">{t('NameLabel', lang)}</span>
-                {!editing ? (
-                  <div className="field-read">{t(profile.name, lang)}</div>
-                ) : (
-                  <input value={draft.name} onChange={(e) => updateField("name", e.target.value)} />
-                )}
-              </label>
-
-              {/* Village */}
-              <label className="field">
-                <span className="field-title">{t('VillageLabel', lang)}</span>
-                {!editing ? (
-                  <div className="field-read">{t(profile.village, lang)}</div>
-                ) : (
-                  <input value={draft.village} onChange={(e) => updateField("village", e.target.value)} />
-                )}
-              </label>
-
-              {/* Language */}
-              <label className="field">
-                <span className="field-title">{t('LanguageLabel', lang)}</span>
-                {!editing ? (
-                  <div className="field-read">{t(profile.language, lang)}</div>
-                ) : (
-                  <select value={draft.language} onChange={(e) => updateField("language", e.target.value)}>
-                     <option value="English">{t('English', lang) || "English"}</option>
-                    <option value="Hindi">{t('Hindi', lang) || "Hindi"}</option>
-                    <option value="Kannada">{t('Kannada', lang) || "Kannada"}</option>
-                    <option value="Tamil">{t('Tamil', lang) || "Tamil"}</option>
-                    <option value="Marathi">{t('Marathi', lang) || "Marathi"}</option>
-                    <option value="Bengali">{t('Bengali', lang) || "Bengali"}</option>
-                  </select>
-                )}
-              </label>
-
-              {/* Group */}
-              <label className="field">
-                <span className="field-title">{t('GroupLabel', lang)}</span>
-                {!editing ? (
-                  <div className="field-read">{t(profile.group, lang)}</div>
-                ) : (
-                  <input value={draft.group} onChange={(e) => updateField("group", e.target.value)} />
-                )}
-              </label>
-
-              {error && <div className="form-error">{error}</div>}
-            </form>
-          </div>
+          <div className="profile-name">{editing ? draft.name : profile.name}</div>
+          <div className="profile-sub">{editing ? draft.village : profile.village}</div>
         </div>
 
-        {toast && <div className="toast">{toast}</div>}
+        <div style={{ marginTop: 24, width: '100%', maxWidth: 300 }}>
+          {!editing ? (
+            <button className="btn btn-primary" onClick={startEdit} style={{ width: '100%' }}>
+              <Edit3 size={18} /> 
+              {lang.startsWith('hi') ? "प्रोफ़ाइल संपादित करें" : "Edit Profile"}
+            </button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, width: '100%' }}>
+              <button className="btn btn-save" onClick={saveProfile}>
+                {loading ? (lang.startsWith('hi') ? "सहेजा जा रहा है..." : "Saving...") : (
+                  <><Save size={18} /> {lang.startsWith('hi') ? "परिवर्तन सहेजें" : "Save Changes"}</>
+                )}
+              </button>
+              <button className="btn btn-secondary" onClick={cancelEdit}>
+                <X size={18} /> {lang.startsWith('hi') ? "रद्द करें" : "Cancel"}
+              </button>
+            </div>
+          )}
+        </div>
+        {error && <div className="form-error" style={{ marginTop: 16 }}>{error}</div>}
       </div>
-    </>
+
+      {/* PERSONAL INFORMATION SECTION */}
+      <div className="profile-section">
+        <div className="section-title">
+          <UserCircle className="icon" size={20} color="#3b82f6" />
+          {lang.startsWith('hi') ? "व्यक्तिगत जानकारी" : "Personal Information"}
+        </div>
+        
+        <div className="form-grid">
+          <label className="field">
+            <span className="field-title">{lang.startsWith('hi') ? "पूरा नाम" : "Full Name"}</span>
+            {!editing ? (
+              <div className="field-read">{profile.name}</div>
+            ) : (
+              <input value={draft.name} onChange={(e) => updateField("name", e.target.value)} />
+            )}
+          </label>
+
+          <label className="field">
+            <span className="field-title">{lang.startsWith('hi') ? "फ़ोन नंबर" : "Phone Number"}</span>
+            {!editing ? (
+              <div className="field-read">{profile.phone || "-"}</div>
+            ) : (
+              <input value={draft.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="+91..." />
+            )}
+          </label>
+
+          <label className="field">
+            <span className="field-title">{lang.startsWith('hi') ? "गांव / जिला" : "Village / District"}</span>
+            {!editing ? (
+              <div className="field-read">{profile.village}</div>
+            ) : (
+              <input value={draft.village} onChange={(e) => updateField("village", e.target.value)} />
+            )}
+          </label>
+
+          <label className="field">
+            <span className="field-title">{lang.startsWith('hi') ? "एसएचजी समूह" : "SHG Group"}</span>
+            {!editing ? (
+              <div className="field-read">{profile.group || "-"}</div>
+            ) : (
+              <input value={draft.group} onChange={(e) => updateField("group", e.target.value)} />
+            )}
+          </label>
+        </div>
+      </div>
+
+      {/* APP SETTINGS SECTION */}
+      <div className="profile-section">
+        <div className="section-title">
+          <Settings className="icon" size={20} color="#10b981" />
+          {lang.startsWith('hi') ? "ऐप सेटिंग्स" : "App Settings"}
+        </div>
+        
+        <div className="settings-list">
+          <div className="setting-item">
+            <div className="setting-info">
+              <span>{lang.startsWith('hi') ? "पुश सूचनाएं" : "Push Notifications"}</span>
+              <small>{lang.startsWith('hi') ? "नए ऋण और योजनाओं के लिए अलर्ट प्राप्त करें" : "Receive alerts for new loans and schemes"}</small>
+            </div>
+            <label className="toggle-switch">
+              <input 
+                type="checkbox" 
+                disabled={!editing}
+                checked={draft.notifications} 
+                onChange={(e) => updateField("notifications", e.target.checked)} 
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          <div className="setting-item">
+            <div className="setting-info">
+              <span>{lang.startsWith('hi') ? "एसएमएस अलर्ट" : "SMS Alerts"}</span>
+              <small>{lang.startsWith('hi') ? "महत्वपूर्ण लेनदेन के लिए एसएमएस प्राप्त करें" : "Get SMS for important transactions"}</small>
+            </div>
+            <label className="toggle-switch">
+              <input 
+                type="checkbox" 
+                disabled={!editing}
+                checked={draft.smsAlerts} 
+                onChange={(e) => updateField("smsAlerts", e.target.checked)} 
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+
+          <div className="setting-item">
+            <div className="setting-info">
+              <span>{lang.startsWith('hi') ? "ऐप लॉक (पिन)" : "App Lock (PIN)"}</span>
+              <small>{lang.startsWith('hi') ? "ऐप खोलने के लिए पिन आवश्यक करें" : "Require PIN to open the app"}</small>
+            </div>
+            <label className="toggle-switch">
+              <input 
+                type="checkbox" 
+                disabled={!editing}
+                checked={draft.appLock} 
+                onChange={(e) => updateField("appLock", e.target.checked)} 
+              />
+              <span className="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {toast && (
+        <div className="toast">
+          <CheckCircle2 size={20} />
+          {toast}
+        </div>
+      )}
+    </div>
   );
 }

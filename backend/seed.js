@@ -39,98 +39,99 @@ async function seedDB() {
     }
 
     // ----- SEED LESSONS (Bilingual) -----
-    const lessonCount = await Lesson.countDocuments();
-    if (lessonCount === 0) {
-      const lessons = [
-        {
-          title: { en: "Self-Help Groups (SHGs)", hi: "स्वयं सहायता समूह (SHG)" },
-          summary: { en: "Learn how SHGs can help you save money and get low-interest loans.", hi: "जानें कैसे SHG आपको पैसे बचाने और कम ब्याज पर लोन लेने में मदद करते हैं।" },
-          content: { 
-            en: "A Self-Help Group is a small group of women who pool their savings. You can take small loans from this pool at a very low interest rate compared to local moneylenders. It also empowers you to start small businesses together.", 
-            hi: "स्वयं सहायता समूह महिलाओं का एक छोटा समूह होता है जो अपनी बचत इकट्ठा करते हैं। आप साहूकारों की तुलना में बहुत कम ब्याज दर पर यहां से छोटे लोन ले सकती हैं। यह आपको मिलकर छोटा व्यवसाय शुरू करने में भी मदद करता है।" 
-          },
-          category: { en: "Community", hi: "समुदाय" },
-          difficulty: "Beginner",
-          readTime: "3 min",
-          thumbnailColor: "#ec4899"
+    await Lesson.deleteMany({});
+    const lessons = [
+      {
+        title: { en: "Managing Daily Expenses", hi: "दैनिक खर्चों का प्रबंधन" },
+        summary: { en: "Learn how to track your money, budget properly, and save more.", hi: "जानें कि अपने पैसे को कैसे ट्रैक करें, सही बजट कैसे बनाएं और अधिक बचत कैसे करें।" },
+        content: { 
+          en: "To build a secure future, track every rupee you spend. A good rule is 50-30-20. Keep 50% for needs like groceries, 30% for wants, and 20% for savings. Start by writing down your daily expenses in the Hisab-Kitab app so you can see where your money goes.", 
+          hi: "सुरक्षित भविष्य बनाने के लिए, अपने हर खर्च को ट्रैक करें। 50-30-20 का नियम अपनाएं। 50% जरूरतों (किराने) के लिए, 30% इच्छाओं के लिए, और 20% बचत के लिए रखें। हिसाब-किताब ऐप में अपने दैनिक खर्च लिखकर शुरुआत करें।" 
         },
-        {
-          title: { en: "Maternity Benefit Schemes", hi: "मातृत्व लाभ योजनाएं" },
-          summary: { en: "Financial help provided by the government during pregnancy.", hi: "गर्भावस्था के दौरान सरकार द्वारा दी जाने वाली वित्तीय सहायता।" },
-          content: { 
-            en: "Under schemes like PMMVY, pregnant women receive ₹5,000 directly into their bank account to help with nutrition and wage loss. Always keep your Aadhar and Bank passbook linked to claim this.", 
-            hi: "PMMVY जैसी योजनाओं के तहत, गर्भवती महिलाओं को पोषण के लिए उनके बैंक खाते में सीधे ₹5,000 मिलते हैं। इसका लाभ उठाने के लिए हमेशा अपना आधार और बैंक पासबुक लिंक रखें।" 
-          },
-          category: { en: "Government Schemes", hi: "सरकारी योजनाएं" },
-          difficulty: "Beginner",
-          readTime: "4 min",
-          thumbnailColor: "#8b5cf6"
+        category: { en: "Money Management", hi: "धन प्रबंधन" },
+        difficulty: "Beginner",
+        readTime: "3 min",
+        thumbnailColor: "#10b981",
+        youtubeId: "MUMbGLkc4yg"
+      },
+      {
+        title: { en: "Financial Independence & Saving", hi: "वित्तीय स्वतंत्रता और बचत" },
+        summary: { en: "Why saving money is crucial for women's financial independence.", hi: "महिलाओं की वित्तीय स्वतंत्रता के लिए पैसे बचाना क्यों महत्वपूर्ण है।" },
+        content: { 
+          en: "Having your own savings gives you financial independence and security during emergencies. Even saving ₹100 a week can build an emergency fund over time. Consider opening a secure bank account or joining reliable schemes like Sukanya Samriddhi Yojana for your daughters.", 
+          hi: "अपनी खुद की बचत होना आपको आपात स्थिति के दौरान वित्तीय स्वतंत्रता और सुरक्षा देता है। सप्ताह में ₹100 बचाने से भी समय के साथ एक आपातकालीन फंड बन सकता है। एक सुरक्षित बैंक खाता खोलें या अपनी बेटियों के लिए सुकन्या समृद्धि योजना जैसी विश्वसनीय योजनाओं से जुड़ें।" 
         },
-        {
-          title: { en: "Avoiding Fake Lottery Scams", hi: "फर्जी लॉटरी घोटालों से बचना" },
-          summary: { en: "Protect your hard-earned money from mobile scammers.", hi: "अपने मेहनत के पैसे को मोबाइल स्कैमर्स से बचाएं।" },
-          content: { 
-            en: "If you receive a WhatsApp message or SMS saying you won a lottery or a car, DO NOT click the link. If they ask you to pay a small 'processing fee' to get the big prize, it is 100% a scam.", 
-            hi: "यदि आपको WhatsApp या SMS पर कोई संदेश मिलता है कि आपने लॉटरी या कार जीती है, तो लिंक पर क्लिक न करें। यदि वे बड़ा इनाम पाने के लिए आपसे 'प्रोसेसिंग फीस' मांगते हैं, तो यह 100% एक धोखा है।" 
-          },
-          category: { en: "Security", hi: "सुरक्षा" },
-          difficulty: "Beginner",
-          readTime: "2 min",
-          thumbnailColor: "#ef4444"
-        }
-      ];
-      await Lesson.insertMany(lessons);
-    }
-
+        category: { en: "Savings", hi: "बचत" },
+        difficulty: "Intermediate",
+        readTime: "4 min",
+        thumbnailColor: "#ec4899",
+        youtubeId: "rEWYxGI7NyU"
+      },
+      {
+        title: { en: "PMJDY & Micro-Loans", hi: "PMJDY और माइक्रो-लोन" },
+        summary: { en: "Learn how to open a zero-balance account and apply for small loans.", hi: "जीरो-बैलेंस खाता खोलने और छोटे लोन के लिए आवेदन करने का तरीका जानें।" },
+        content: { 
+          en: "The Pradhan Mantri Jan Dhan Yojana (PMJDY) allows you to open a bank account with zero balance. It also provides an overdraft facility of up to ₹10,000, which acts like a micro-loan for emergencies or small business needs. You can also look into Mudra loans for women entrepreneurs.", 
+          hi: "प्रधानमंत्री जन धन योजना (PMJDY) आपको शून्य बैलेंस के साथ बैंक खाता खोलने की अनुमति देती है। यह ₹10,000 तक की ओवरड्राफ्ट सुविधा भी प्रदान करता है, जो आपात स्थिति या छोटी व्यावसायिक जरूरतों के लिए एक माइक्रो-लोन की तरह काम करता है।" 
+        },
+        category: { en: "Government Schemes", hi: "सरकारी योजनाएं" },
+        difficulty: "Beginner",
+        readTime: "3 min",
+        thumbnailColor: "#3b82f6",
+        youtubeId: "OA38czGuOxE"
+      }
+    ];
+    await Lesson.insertMany(lessons);
     // ----- SEED QUIZ QUESTIONS (Bilingual) -----
+    await QuizQuestion.deleteMany({});
     const quizCount = await QuizQuestion.countDocuments();
     if (quizCount === 0) {
       const quizQuestions = [
         {
-          question: { en: "Why is joining a Self-Help Group (SHG) beneficial for women?", hi: "महिलाओं के लिए स्वयं सहायता समूह (SHG) में शामिल होना क्यों फायदेमंद है?" },
-          category: { en: "Community", hi: "समुदाय" },
+          question: { en: "What is the 50-30-20 rule in budgeting?", hi: "बजट बनाने में 50-30-20 का नियम क्या है?" },
+          category: { en: "Money Management", hi: "धन प्रबंधन" },
           options: [
             { 
-              text: { en: "You get free money without saving.", hi: "आपको बिना बचत किए मुफ्त पैसा मिलता है।" }, 
+              text: { en: "Spend 50% on wants, 30% on savings, 20% on needs.", hi: "इच्छाओं पर 50%, बचत पर 30%, जरूरतों पर 20% खर्च करें।" }, 
               isCorrect: false, 
-              explanation: { en: "SHGs require regular savings, it is not free money.", hi: "SHG में नियमित बचत की आवश्यकता होती है, यह मुफ्त पैसा नहीं है।" } 
+              explanation: { en: "Incorrect. You should prioritize your needs and savings.", hi: "गलत। आपको अपनी जरूरतों और बचत को प्राथमिकता देनी चाहिए।" } 
             },
             { 
-              text: { en: "You can save together and get loans at very low interest rates.", hi: "आप एक साथ बचत कर सकते हैं और बहुत कम ब्याज दरों पर ऋण प्राप्त कर सकते हैं।" }, 
+              text: { en: "Spend 50% on needs, 30% on wants, and save 20%.", hi: "जरूरतों पर 50%, इच्छाओं पर 30% खर्च करें और 20% बचाएं।" }, 
               isCorrect: true, 
-              explanation: { en: "SHGs empower women to pool money and avoid expensive local moneylenders.", hi: "SHG महिलाओं को पैसे इकट्ठा करने और महंगे स्थानीय साहूकारों से बचने में सशक्त बनाता है।" } 
+              explanation: { en: "Correct! This rule helps you balance your expenses and build savings.", hi: "सही! यह नियम आपको अपने खर्चों को संतुलित करने और बचत बनाने में मदद करता है।" } 
             }
           ]
         },
         {
-          question: { en: "You are pregnant and eligible for the PMMVY scheme. How will you receive the ₹5,000?", hi: "आप गर्भवती हैं और PMMVY योजना के लिए पात्र हैं। आपको ₹5,000 कैसे मिलेंगे?" },
+          question: { en: "Why is having an emergency fund important for women?", hi: "महिलाओं के लिए आपातकालीन फंड का होना क्यों महत्वपूर्ण है?" },
+          category: { en: "Savings", hi: "बचत" },
+          options: [
+            { 
+              text: { en: "It provides financial security and independence during unexpected events.", hi: "यह अप्रत्याशित घटनाओं के दौरान वित्तीय सुरक्षा और स्वतंत्रता प्रदान करता है।" }, 
+              isCorrect: true, 
+              explanation: { en: "Exactly. An emergency fund protects you without needing high-interest loans.", hi: "बिल्कुल। एक आपातकालीन फंड उच्च ब्याज वाले ऋण की आवश्यकता के बिना आपकी रक्षा करता है।" } 
+            },
+            { 
+              text: { en: "It allows you to buy expensive jewelry anytime.", hi: "यह आपको किसी भी समय महंगे आभूषण खरीदने की अनुमति देता है।" }, 
+              isCorrect: false, 
+              explanation: { en: "Emergency funds are for urgent needs, not for luxury shopping.", hi: "आपातकालीन धन तत्काल जरूरतों के लिए है, लक्जरी खरीदारी के लिए नहीं।" } 
+            }
+          ]
+        },
+        {
+          question: { en: "What is a major benefit of the PMJDY scheme?", hi: "PMJDY योजना का एक प्रमुख लाभ क्या है?" },
           category: { en: "Government Schemes", hi: "सरकारी योजनाएं" },
           options: [
             { 
-              text: { en: "The Sarpanch will give you cash in hand.", hi: "सरपंच आपको नकद पैसे देंगे।" }, 
+              text: { en: "You get a guaranteed government job.", hi: "आपको सरकारी नौकरी की गारंटी मिलती है।" }, 
               isCorrect: false, 
-              explanation: { en: "The government directly transfers the money to your bank account to prevent corruption.", hi: "भ्रष्टाचार को रोकने के लिए सरकार सीधे आपके बैंक खाते में पैसे ट्रांसफर करती है।" } 
+              explanation: { en: "PMJDY is a financial scheme, it does not provide employment.", hi: "PMJDY एक वित्तीय योजना है, यह रोजगार प्रदान नहीं करती है।" } 
             },
             { 
-              text: { en: "It is deposited directly into your Aadhar-linked bank account.", hi: "यह सीधे आपके आधार-लिंक्ड बैंक खाते में जमा किया जाता है।" }, 
+              text: { en: "You can open a zero-balance bank account with an overdraft facility.", hi: "आप ओवरड्राफ्ट सुविधा के साथ जीरो-बैलेंस बैंक खाता खोल सकते हैं।" }, 
               isCorrect: true, 
-              explanation: { en: "Direct Benefit Transfer (DBT) ensures the money safely reaches you.", hi: "प्रत्यक्ष लाभ हस्तांतरण (DBT) यह सुनिश्चित करता है कि पैसा सुरक्षित रूप से आप तक पहुंचे।" } 
-            }
-          ]
-        },
-        {
-          question: { en: "A stranger calls saying your bank account is blocked and asks for your OTP to fix it. What should you do?", hi: "एक अजनबी कॉल करता है कि आपका बैंक खाता ब्लॉक है और इसे ठीक करने के लिए आपका OTP मांगता है। आपको क्या करना चाहिए?" },
-          category: { en: "Security", hi: "सुरक्षा" },
-          options: [
-            { 
-              text: { en: "Tell him the OTP quickly so your account is saved.", hi: "जल्दी से उसे OTP बता दें ताकि आपका खाता बच जाए।" }, 
-              isCorrect: false, 
-              explanation: { en: "Never share OTPs! The fraudster is trying to steal your money.", hi: "कभी भी OTP साझा न करें! धोखेबाज आपके पैसे चुराने की कोशिश कर रहा है।" } 
-            },
-            { 
-              text: { en: "Disconnect the call immediately. Banks never ask for OTPs.", hi: "कॉल को तुरंत काट दें। बैंक कभी भी OTP नहीं मांगते।" }, 
-              isCorrect: true, 
-              explanation: { en: "You are absolutely correct. Your OTP is your secret key.", hi: "आप बिल्कुल सही हैं। आपका OTP आपकी गुप्त कुंजी है।" } 
+              explanation: { en: "Yes! It ensures financial inclusion and provides small emergency loans via overdraft.", hi: "हाँ! यह वित्तीय समावेशन सुनिश्चित करता है और ओवरड्राफ्ट के माध्यम से छोटे आपातकालीन ऋण प्रदान करता है।" } 
             }
           ]
         }

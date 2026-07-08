@@ -120,10 +120,21 @@ export default function EducationHub({ lang = 'en-IN' }) {
             
             <button className="edu-close-btn" onClick={() => { setActive(null); window.speechSynthesis.cancel(); }}>✖</button>
             
-            <div className="edu-modal-hero" style={{ background: `linear-gradient(135deg, ${active.thumbnailColor}88, ${active.thumbnailColor})` }}>
-              <div className="edu-play-btn" style={{ transform: 'scale(1.5)' }}>
-                <div className="edu-play-icon" style={{ marginLeft: 8 }}></div>
-              </div>
+            <div className="edu-modal-hero" style={{ background: `linear-gradient(135deg, ${active.thumbnailColor}88, ${active.thumbnailColor})`, position: 'relative' }}>
+              {active.youtubeId ? (
+                <iframe 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '16px 16px 0 0' }}
+                  src={`https://www.youtube.com/embed/${active.youtubeId}?autoplay=1`} 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <div className="edu-play-btn" style={{ transform: 'scale(1.5)' }}>
+                  <div className="edu-play-icon" style={{ marginLeft: 8 }}></div>
+                </div>
+              )}
             </div>
 
             <div className="edu-modal-content">

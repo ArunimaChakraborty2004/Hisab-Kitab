@@ -1,26 +1,35 @@
 import React, { useState } from "react";
 import { t } from "./translations";
+import { 
+  PhoneCall, MessageCircle, HeartPulse, ShieldAlert, 
+  Ambulance, ChevronDown, ChevronUp, Stethoscope, 
+  HelpCircle, Headset, Info
+} from "lucide-react";
+import "./HelpSupport.scss";
 
 export default function HelpSupport({ lang = 'en-IN' }) {
-  const [showFAQ, setShowFAQ] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
 
-  const volunteerNumber = "+911234567890"; // update with real number
-  const whatsappNumber = "911234567890";   // use digits only for wa.me
-  const defaultMessage = "Hello, I need assistance regarding the Hisab‑Kitab app.";
+  const volunteerNumber = "+911234567890";
+  const whatsappNumber = "911234567890";
+  const defaultMessage = "Hello, I need assistance regarding the Hisab-Kitab app.";
 
-  // FAQ list (you can fetch from backend later)
   const faqs = [
     {
-      q: "How do I reset my PIN?",
-      a: "Go to Profile → Settings → Reset PIN. You will receive an OTP to verify."
+      q: { en: "How do I reset my PIN?", hi: "मैं अपना पिन कैसे रीसेट करूं?" },
+      a: { en: "Go to Profile → Settings → Reset PIN. You will receive an OTP to verify.", hi: "प्रोफ़ाइल → सेटिंग → पिन रीसेट करें पर जाएं। आपको सत्यापित करने के लिए एक ओटीपी प्राप्त होगा।" }
     },
     {
-      q: "How do I contact a volunteer?",
-      a: "Use the green 'Call Volunteer' button to connect instantly."
+      q: { en: "How do I add a new expense?", hi: "मैं नया खर्च कैसे जोड़ूं?" },
+      a: { en: "Navigate to the Transactions tab and tap the + icon at the bottom.", hi: "लेनदेन टैब पर जाएं और नीचे + आइकन पर टैप करें।" }
     },
     {
-      q: "Is my data safe?",
-      a: "Yes, all your data is securely stored and encrypted."
+      q: { en: "Is my data safe?", hi: "क्या मेरा डेटा सुरक्षित है?" },
+      a: { en: "Yes, all your financial data is securely stored and encrypted.", hi: "हां, आपका सभी वित्तीय डेटा सुरक्षित रूप से संग्रहीत और एन्क्रिप्टेड है।" }
+    },
+    {
+      q: { en: "How do I apply for a loan?", hi: "मैं ऋण के लिए कैसे आवेदन करूं?" },
+      a: { en: "Check the 'Schemes' section to explore Mudra and other government loans.", hi: "मुद्रा और अन्य सरकारी ऋणों का पता लगाने के लिए 'योजनाएं' अनुभाग देखें।" }
     }
   ];
 
@@ -29,147 +38,128 @@ export default function HelpSupport({ lang = 'en-IN' }) {
     window.open(url, "_blank");
   }
 
-  function handleCall() {
-    // tel: link triggers phone apps on mobile, dialer on desktops that support it
-    window.location.href = `tel:${volunteerNumber}`;
+  function handleCall(number) {
+    window.location.href = `tel:${number}`;
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <div
-        style={{
-          background: "rgba(255,255,255,0.05)",
-          padding: 20,
-          borderRadius: 16,
-          border: "1px solid rgba(255,255,255,0.15)"
-        }}
-      >
-        <h1 style={{ color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{
-            background: "#ff4d6d",
-            padding: "4px 10px",
-            borderRadius: 6,
-            fontWeight: 700,
-            color: "var(--text-primary)"
-          }}>SOS</span>
-          {t('Help', lang)}
+    <div className="help-page">
+      <div className="help-header">
+        <h1>
+          <HeartPulse size={32} color="#f472b6" />
+          {t('Health & Support', lang) || "Health & Support"}
         </h1>
+        <p>{lang.startsWith('hi') ? "आपातकालीन हेल्पलाइन, स्वास्थ्य योजनाएं और ऐप समर्थन।" : "Emergency helplines, health schemes, and app support."}</p>
+      </div>
 
-        <p style={{ marginTop: 10, color: "#ccc" }}>
-          Need assistance? Choose an option below:
-        </p>
-
-        {/* CALL VOLUNTEER */}
-        <div
-          onClick={handleCall}
-          style={{
-            background: "#16a34a",
-            padding: 18,
-            borderRadius: 12,
-            marginTop: 20,
-            color: "#ffffff",
-            fontSize: 17,
-            fontWeight: 600,
-            textAlign: "center",
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(22,163,74,0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          📞 Call Volunteer
+      {/* Emergency Helplines Section */}
+      <div className="help-section">
+        <div className="section-title">
+          <ShieldAlert className="icon" size={20} color="#ef4444" />
+          {lang.startsWith('hi') ? "आपातकालीन हेल्पलाइन" : "Emergency Helplines"}
         </div>
-
-        {/* WHATSAPP SUPPORT */}
-        <div
-          onClick={handleWhatsApp}
-          style={{
-            background: "#2563eb",
-            padding: 18,
-            borderRadius: 12,
-            marginTop: 12,
-            color: "#ffffff",
-            fontSize: 17,
-            fontWeight: 600,
-            textAlign: "center",
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          💬 WhatsApp Support
-        </div>
-
-        {/* FAQ */}
-        <div
-          onClick={() => setShowFAQ(true)}
-          style={{
-            background: "#ea580c",
-            padding: 18,
-            borderRadius: 12,
-            marginTop: 12,
-            color: "#ffffff",
-            fontSize: 17,
-            fontWeight: 600,
-            textAlign: "center",
-            cursor: "pointer",
-            boxShadow: "0 4px 12px rgba(234,88,12,0.3)",
-            transition: "all 0.2s"
-          }}
-        >
-          ❓ FAQs
+        <div className="grid-cards">
+          <div className="action-card emergency" onClick={() => handleCall('1091')}>
+            <PhoneCall size={28} />
+            <span>Women Helpline</span>
+            <small>Dial 1091</small>
+          </div>
+          <div className="action-card emergency" onClick={() => handleCall('108')}>
+            <Ambulance size={28} />
+            <span>Ambulance</span>
+            <small>Dial 108</small>
+          </div>
+          <div className="action-card emergency" onClick={() => handleCall('1930')}>
+            <ShieldAlert size={28} />
+            <span>Cyber Crime</span>
+            <small>Dial 1930</small>
+          </div>
         </div>
       </div>
 
-      {/* FAQ MODAL */}
-      {showFAQ && (
-        <div
-          onClick={() => setShowFAQ(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15,23,42,0.55)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-            backdropFilter: "blur(4px)"
-          }}
+      {/* Health Info Section */}
+      <div className="help-section">
+        <div className="section-title">
+          <Stethoscope className="icon" size={20} color="#f472b6" />
+          {lang.startsWith('hi') ? "स्वास्थ्य योजनाएं" : "Health Schemes & Info"}
+        </div>
+        
+        <a 
+          href="https://pmjay.gov.in/" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="health-info-card" 
+          style={{ display: 'block', textDecoration: 'none' }}
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "#fff",
-              padding: 24,
-              borderRadius: 12,
-              maxWidth: 600,
-              width: "90%",
-              color: "#000"
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2>Frequently Asked Questions</h2>
-              <button
-                onClick={() => setShowFAQ(false)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: 20,
-                  cursor: "pointer"
-                }}
-              >
-                ✖
-              </button>
-            </div>
+          <h3>{lang.startsWith('hi') ? "आयुष्मान भारत योजना" : "Ayushman Bharat Yojana"}</h3>
+          <p>{lang.startsWith('hi') ? "गरीब और कमजोर परिवारों के लिए ₹5 लाख तक का मुफ्त स्वास्थ्य बीमा कवर।" : "Free health insurance cover of up to ₹5 Lakhs for poor and vulnerable families."}</p>
+        </a>
+        
+        <a 
+          href="https://nhm.gov.in/" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="health-info-card" 
+          style={{ display: 'block', textDecoration: 'none' }}
+        >
+          <h3>{lang.startsWith('hi') ? "जननी सुरक्षा योजना (JSY)" : "Janani Suraksha Yojana (JSY)"}</h3>
+          <p>{lang.startsWith('hi') ? "संस्थागत प्रसव को बढ़ावा देने के लिए गर्भवती महिलाओं को नकद सहायता।" : "Cash assistance for pregnant women to promote institutional delivery and healthcare."}</p>
+        </a>
+      </div>
 
-            {faqs.map((f, idx) => (
-              <div key={idx} style={{ marginBottom: 18 }}>
-                <strong>{f.q}</strong>
-                <p style={{ marginTop: 4 }}>{f.a}</p>
-              </div>
-            ))}
+      {/* App Support Section */}
+      <div className="help-section">
+        <div className="section-title">
+          <Headset className="icon" size={20} color="#3b82f6" />
+          {lang.startsWith('hi') ? "ऐप समर्थन" : "App Support"}
+        </div>
+        <div className="grid-cards">
+          <div className="action-card primary" onClick={() => handleCall(volunteerNumber)}>
+            <PhoneCall size={28} />
+            <span>Call Volunteer</span>
+            <small>Instant Help</small>
+          </div>
+          <div className="action-card whatsapp" onClick={handleWhatsApp}>
+            <MessageCircle size={28} />
+            <span>WhatsApp Support</span>
+            <small>Chat with us</small>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* FAQs Section */}
+      <div className="help-section">
+        <div className="section-title">
+          <HelpCircle className="icon" size={20} color="#eab308" />
+          {lang.startsWith('hi') ? "अक्सर पूछे जाने वाले प्रश्न" : "Frequently Asked Questions"}
+        </div>
+        
+        <div>
+          {faqs.map((f, idx) => {
+            const isOpen = openFaq === idx;
+            const qText = lang.startsWith('hi') ? f.q.hi : f.q.en;
+            const aText = lang.startsWith('hi') ? f.a.hi : f.a.en;
+            
+            return (
+              <div key={idx} className="faq-item">
+                <div 
+                  className="faq-question" 
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                >
+                  <span>{qText}</span>
+                  {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
+                {isOpen && (
+                  <div className="faq-answer">
+                    {aText}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
     </div>
   );
 }
