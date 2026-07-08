@@ -7,9 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const seedDB = require("./seed");
+
 // connect DB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
+  .then(async () => {
+    console.log("MongoDB Connected");
+    await seedDB(); // Automatically seed the database if it's empty
+  })
   .catch(err => console.error("DB Error:", err));
 
 // routes
